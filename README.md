@@ -1,9 +1,14 @@
 # manteia
 
-TypeScript で作る診断アプリ。
+古代ギリシャ哲学者の診断アプリ。
 
-質問に答えるとタイプ判定などの結果が出る、フロントエンド完結型のアプリケーション。
-回答データの保存は行わず、スコア計算から結果表示までをすべてブラウザ内で完結させる。
+複数の質問に答えると、思想的に**最も近い哲学者**を6人のリストから判定して返す。
+哲学的立場を4本の軸で座標化し、回答から得たユーザー座標との距離が最小の人物を選ぶ。
+
+回答データの保存は行わず、判定から結果表示までをすべてブラウザ内で完結させる。
+
+> **仕様の詳細は [REQUIREMENTS.md](./REQUIREMENTS.md) を参照。**
+> 軸の定義、哲学者6人の座標、設問の方針、未確定事項はそちらに記載している。
 
 ## 技術構成
 
@@ -52,13 +57,13 @@ npx tsc -b
 
 実装を進める際は以下の 3 点を軸にする。TypeScript の型を「動くドキュメント」として使うための土台。
 
-**1. 質問データは `as const satisfies` で定義する**
+**1. 質問データと哲学者データは `as const satisfies` で定義する**
 
-リテラル型に絞り込まれるため、結果タイプとの対応漏れがコンパイル時に検出できる。
+リテラル型に絞り込まれるため、軸や哲学者との対応漏れがコンパイル時に検出できる。
 
-**2. スコア計算は React から独立した純粋関数にする**
+**2. 距離計算は React から独立した純粋関数にする**
 
-`(questions, answers) => ResultTypeId` という形にしておけば UI に依存せず、
+`(answers) => PhilosopherId` という形にしておけば UI に依存せず、
 ユニットテストが書ける。診断アプリはロジックの正しさが成果物の価値そのものなので、
 ここだけはテストを置く価値がある。
 
@@ -68,7 +73,7 @@ npx tsc -b
 type State =
   | { phase: 'start' }
   | { phase: 'answering'; index: number; answers: number[] }
-  | { phase: 'result'; result: ResultTypeId }
+  | { phase: 'result'; philosopher: PhilosopherId }
 ```
 
 `phase` で分岐すれば、その分岐内でのみ存在するプロパティに安全にアクセスできる。
@@ -80,29 +85,53 @@ type State =
 
 ```
 src/
-  types.ts          … Question / Choice / ResultType の型定義
+  types.ts            … Axis / Question / Choice / Philosopher の型定義
   data/
-    questions.ts    … 質問データ
-    results.ts      … 診断結果タイプの定義
+    axes.ts           … 4本の軸の定義
+    questions.ts      … 質問データ（選択肢ごとの軸への加点）
+    philosophers.ts   … 哲学者6人の座標と解説文
   logic/
-    scoring.ts      … 回答配列 → 結果タイプ を返す純粋関数
+    vector.ts         … 回答 → ユーザー座標（正規化を含む）
+    distance.ts       … ユークリッド距離、最近傍の哲学者を返す
   hooks/
-    useDiagnosis.ts … useReducer による状態遷移
-  components/       … StartScreen / QuestionCard / ProgressBar / ResultScreen
+    useDiagnosis.ts   … useReducer による状態遷移
+  components/         … StartScreen / QuestionCard / ProgressBar / ResultScreen
   App.tsx
 ```
 
 ## デプロイ
 
-**Cloudflare Pages** を想定。無料プランで帯域・静的アセットへのリクエストが無制限、
-かつ商用利用が許可されているため。
+**Vercel**（Hobby プラン）を使用する。GitHub リポジトリを連携すると、
+`main` への push で本番デプロイ、それ以外のブランチはプレビューデプロイが自動で走る。
 
-ダッシュボードで GitHub リポジトリを接続し、以下を指定する。
+Vercel は Vite を自動検出するため、インポート時の設定入力は不要（下記が自動で入る）。
 
-- ビルドコマンド: `npm run build`
-- 出力ディレクトリ: `dist`
+| 項目 | 自動設定される値 |
+|---|---|
+| Framework Preset | `Vite` |
+| Build Command | `npm run build` |
+| Output Directory | `dist` |
 
-> Vercel の無料プラン (Hobby) は規約上 **商用利用が不可**。業務関連で公開する場合は選択できない。
+> **Hobby プランは規約上、商用利用が不可。**
+> 本プロジェクトは個人学習用途のため問題ないが、業務案件に転用する場合は
+> Cloudflare Pages（無料枠で商用利用可）などへの移行が必要になる。
+
+Vercel のデフォルト Node は 22 系。ローカルの `.nvmrc`（24）と揃えたい場合は
+Project Settings → General → Node.js Version で変更する。Vite 8 は 22 でも動くため必須ではない。
+
+### SPA ルーティングを入れた場合
+
+react-router などを導入すると、`/result` のような URL への直接アクセスが 404 になる。
+その場合はプロジェクトルートに `vercel.json` を置く。
+
+```json
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+}
+```
+
+現状はルーターを使っていないため不要。
 
 ## 学習リソース
 
@@ -126,7 +155,20 @@ src/
 - [Vite 公式ドキュメント 日本語版](https://ja.vite.dev/guide/) —
   「はじめに」と「静的アセットの取り扱い」だけで足りる
 
+### 距離計算
+
+- [ユークリッド距離 (Wikipedia)](https://ja.wikipedia.org/wiki/ユークリッド距離) — 本アプリが採用する距離
+- [コサイン類似度 (Wikipedia)](https://ja.wikipedia.org/wiki/コサイン類似度) — 採用しなかった選択肢。
+  強度を無視して方向だけを見るため、穏健な人と極端な人が同じ結果になる
+- 正規化は「min-max normalization」で検索。式は `(x - min) / (max - min)`
+
+`Math.sqrt()` と `reduce()` で書ける。数学的には難しくない。
+
 ### 基礎の補強
 
 - [MDN Web Docs 日本語 (JavaScript)](https://developer.mozilla.org/ja/docs/Web/JavaScript) —
-  スコア集計で `reduce` を多用するため、配列メソッドの確認用に
+  座標計算で `reduce` を多用するため、配列メソッドの確認用に
+
+### 哲学者の典拠
+
+座標値を決める際の参照先は [REQUIREMENTS.md](./REQUIREMENTS.md) の「調べどころ」章にまとめている。
