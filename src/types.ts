@@ -1,5 +1,11 @@
 export const AXIS_IDS = ['good', 'knowledge', 'society', 'stance'] as const
 export type AxisId = (typeof AXIS_IDS)[number]
+export type Axis = {
+  id: AxisId;
+  name: string;
+  negative: string;
+  positive: string;
+}
 export type Coordinate = Record<AxisId, number>
 export const PHILOSOPHER_IDS = [
   'socrates',
