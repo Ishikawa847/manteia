@@ -32,3 +32,8 @@ export type Philosopher = {
   coordinate: Coordinate;
   description: string;
 }
+
+export type Answer = {
+  questionId: number;
+  choice: Choice;
+}
