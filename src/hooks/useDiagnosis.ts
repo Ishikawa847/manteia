@@ -1,4 +1,4 @@
-import type {PhilosopherId} from "../types.ts";
+import type {PhilosopherId, Answer} from "../types.ts";
 
 export type DiagnosisStatus = Start | Answering | Result;
 type Start  = {
@@ -6,8 +6,10 @@ type Start  = {
 };
 type Answering  = {
     phase: "answering";
+    currentIndex: number;
+    answers: readonly Answer[];
 };
 type Result  = {
     phase: "result";
-    philosopher_id: PhilosopherId;
+    philosopherId: PhilosopherId;
 };
