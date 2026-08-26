@@ -1,4 +1,4 @@
-import type {PhilosopherId, Answer} from "../types.ts";
+import type {PhilosopherId, Answer, Choice} from "../types.ts";
 
 export type DiagnosisStatus = Start | Answering | Result;
 type Start  = {
@@ -13,3 +13,5 @@ type Result  = {
     phase: "result";
     philosopherId: PhilosopherId;
 };
+
+type Action = { type: 'START' } | { type: 'ANSWER', choice: Choice } | { type: 'RESULT' }
