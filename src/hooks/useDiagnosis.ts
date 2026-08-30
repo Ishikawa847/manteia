@@ -28,6 +28,6 @@ function reducer(state: DiagnosisStatus, action: Action): DiagnosisStatus {
                 return {phase: "answering", currentIndex: state.currentIndex+1, answers: [...state.answers, {questionId: state.currentIndex+1, choice: action.choice}]}
             }
         case 'RESULT':
-            return {phase: "result", philosopherId: nearestPhilosopher(target:)};
+            return {phase: "result", philosopherId: nearestPhilosopher(target: target, philosphers: philosphers)};
     }
 }
