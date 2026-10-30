@@ -8,7 +8,7 @@ export const distance = (a: Coordinate, b: Coordinate): number => {
 
 export const nearestPhilosopher = (target: Coordinate, philosophers: readonly Philosopher[]
 ): PhilosopherId => {
-   let minimum = philosophers.reduce((acc, cur) => distance(target,cur["coordinate"]) > distance(target, acc["coordinate"]) ?
+   let minimum = philosophers.reduce((acc, cur) => distance(target,cur["coordinate"]) >= distance(target, acc["coordinate"]) ?
       acc : cur)
     return minimum["id"]
 }
