@@ -1,13 +1,12 @@
 import {useDiagnosis} from "./hooks/useDiagnosis.ts";
 import {QUESTIONS} from "./data/questions.ts";
+import StartScreen from "./components/StartScreen.tsx";
 
 export default function App() {
   const [state, dispatch] = useDiagnosis()
   if (state.phase === "start") {
-    return (<>
-          <p>start</p>
-          <button onClick={() => dispatch({type: 'START'})}>はじめる</button>
-        </>
+    return (
+        <StartScreen onStart={() => dispatch({type: 'START'})} />
     )
   }
   if (state.phase === "answering") {
