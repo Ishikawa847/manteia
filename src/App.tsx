@@ -1,6 +1,7 @@
 import {useDiagnosis} from "./hooks/useDiagnosis.ts";
 import {QUESTIONS} from "./data/questions.ts";
 import StartScreen from "./components/StartScreen.tsx";
+import QuestionScreen from "./components/QuestionScreen.tsx";
 
 export default function App() {
   const [state, dispatch] = useDiagnosis()
@@ -11,11 +12,7 @@ export default function App() {
   }
   if (state.phase === "answering") {
     return (
-        <>
-        <p>answering</p>
-        <p>{state.currentIndex + 1}問目</p>
-        <button onClick={() => dispatch({type: "ANSWER", choice: QUESTIONS[state.currentIndex].choices[0]})}>次へ</button>
-        </>
+        <QuestionScreen question={QUESTIONS[state.currentIndex]} index={state.currentIndex} total={QUESTIONS.length} onAnswer={(choice) => dispatch({ type: "ANSWER", choice })}/>
     )
   }
   return (<p>{state.philosopherId}</p>)
