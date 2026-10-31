@@ -2,6 +2,8 @@ import {useDiagnosis} from "./hooks/useDiagnosis.ts";
 import {QUESTIONS} from "./data/questions.ts";
 import StartScreen from "./components/StartScreen.tsx";
 import QuestionScreen from "./components/QuestionScreen.tsx";
+import ResultScreen from "./components/ResultScreen.tsx";
+import {PHILOSOPHERS} from "./data/philosophers.ts";
 
 export default function App() {
   const [state, dispatch] = useDiagnosis()
@@ -15,5 +17,11 @@ export default function App() {
         <QuestionScreen question={QUESTIONS[state.currentIndex]} index={state.currentIndex} total={QUESTIONS.length} onAnswer={(choice) => dispatch({ type: "ANSWER", choice })}/>
     )
   }
-  return (<p>{state.philosopherId}</p>)
+  const philosopher = PHILOSOPHERS.find((p) => p.id === state.philosopherId)
+  if (!philosopher) {
+    return <p>結果が見つかりませんでした</p>
+  }
+  return (
+      <ResultScreen philosopher={philosopher}/>
+  )
 }
