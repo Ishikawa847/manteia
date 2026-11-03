@@ -34,9 +34,9 @@ export const QUESTIONS = [
         id: 4,
         text: '本当に確かなものは、どこにあると思う？',
         choices: [
-            { label: '目に見えない理想や本質の中', scores: { knowledge: -2 } },
+            { label: '目には見えないけれど、頭で考えて分かる完璧な形の中', scores: { knowledge: -2 } },
             { label: '自分の目で見て確かめたものの中', scores: { knowledge: 2 } },
-            { label: '世界全体を貫く理屈や法則の中', scores: { knowledge: -1, stance: -1 } },
+            { label: '自然や世の中が動く、決まったルールの中', scores: { knowledge: -1, stance: -1 } },
             { label: '確かなものはない。だから問い続ける', scores: { stance: 2 } },
         ],
     },
@@ -54,7 +54,7 @@ export const QUESTIONS = [
         id: 6,
         text: '友人や仲間について、近い考えは？',
         choices: [
-            { label: '共同体の中で支え合ってこそ人間らしい', scores: { society: 2 } },
+            { label: '地域や職場など、みんなと支え合って生きるのが自然', scores: { society: 2 } },
             { label: '気の合う少数の友人がいれば十分', scores: { society: -1, good: 1 } },
             { label: '人に頼らず、ひとりで満ち足りていたい', scores: { society: -2, good: -1 } },
         ],
@@ -63,7 +63,7 @@ export const QUESTIONS = [
         id: 7,
         text: '思いどおりにいかない出来事が起きたら？',
         choices: [
-            { label: 'すべてには理由がある。大きな流れとして受け入れる', scores: { stance: -2 } },
+            { label: '起きることには意味がある。そうなる運命だったと受け止める', scores: { stance: -2 } },
             { label: '受け入れつつ、自分にできることに集中する', scores: { stance: -1, good: -1 } },
             { label: 'なぜ起きたのか、納得いくまで考える', scores: { stance: 2 } },
         ],
