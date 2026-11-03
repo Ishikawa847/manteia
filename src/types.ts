@@ -32,6 +32,7 @@ export type Philosopher = {
   coordinate: Coordinate;
   description: string;
   image: string;
+  quote: string;
 }
 
 export type Answer = {

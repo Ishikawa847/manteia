@@ -14,7 +14,8 @@ export default function ResultScreen({ philosopher }: Props){
                 sx={{ height: 300, width: 'auto', maxWidth: '100%' }}
             />
             <Typography variant="h4">{philosopher.name}</Typography>
-            {philosopher.school && <Typography variant="subtitle1">{philosopher.school}</Typography> }
+            {philosopher.school && <Typography variant="subtitle1">{philosopher.school}</Typography>}
+            <Typography variant="subtitle1" sx={{ fontWeight: 'bold', fontSize: '2rem' }}>「{philosopher.quote}」</Typography>
             <Typography variant="body1">{philosopher.description}</Typography>
         </Stack>
     )
