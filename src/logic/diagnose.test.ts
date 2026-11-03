@@ -11,6 +11,6 @@ test('快楽寄り・隠遁寄りに答えるとエピクロス', () => {
     expect(diagnose(answersOf([0, 1]))).toBe('epicurus')
 })
 
-test('禁欲寄り・参与寄りに答えるとプラトン', () => {
-    expect(diagnose(answersOf([1, 0]))).toBe('plato')
+test('禁欲寄り・参与寄りに答えるとゼノン', () => {
+    expect(diagnose(answersOf([1, 0]))).toBe('zeno')
 })
