@@ -10,7 +10,7 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
       <ThemeProvider theme={theme}>
           <CssBaseline />
-          <Container maxWidth="sm" sx={{ py: 4 }}>
+          <Container maxWidth="sm" sx={{ py: 4, minHeight: '100dvh', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
     <App />
           </Container>
       </ThemeProvider>

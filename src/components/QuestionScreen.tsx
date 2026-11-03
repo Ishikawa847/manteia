@@ -10,7 +10,7 @@ type Props = {
 
 export default function QuestionScreen({question, index, total, onAnswer}:Props) {
     return(
-    <>
+    <Stack spacing={1} sx={{alignItems: "center", textAlign: 'center'}}>
         <Typography variant="body1">{index + 1}問目/全{total}問</Typography>
         <Typography variant="h5">{question.text}</Typography>
         <Stack spacing={2}>
@@ -18,6 +18,6 @@ export default function QuestionScreen({question, index, total, onAnswer}:Props)
             <Button variant="contained" key={choice.label} onClick={()=>onAnswer(choice)}>{choice.label}</Button>
         )}
         </Stack>
-    </>
+    </Stack>
     )
 }
