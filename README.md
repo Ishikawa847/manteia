@@ -101,37 +101,64 @@ src/
 
 ## デプロイ
 
-**Vercel**（Hobby プラン）を使用する。GitHub リポジトリを連携すると、
+**Cloudflare Pages**（無料プラン）を使用する。GitHub リポジトリと連携しており、
 `main` への push で本番デプロイ、それ以外のブランチはプレビューデプロイが自動で走る。
 
-Vercel は Vite を自動検出するため、インポート時の設定入力は不要（下記が自動で入る）。
-
-| 項目 | 自動設定される値 |
+| 項目 | 値 |
 |---|---|
-| Framework Preset | `Vite` |
+| Production Branch | `main` |
 | Build Command | `npm run build` |
 | Output Directory | `dist` |
 
-> **Hobby プランは規約上、商用利用が不可。**
-> 本プロジェクトは個人学習用途のため問題ないが、業務案件に転用する場合は
-> Cloudflare Pages（無料枠で商用利用可）などへの移行が必要になる。
+これらの設定はダッシュボードで手入力せず、`infra/` の OpenTofu で管理している（[インフラ管理](#インフラ管理opentofu) を参照）。
 
-Vercel のデフォルト Node は 22 系。ローカルの `.nvmrc`（24）と揃えたい場合は
-Project Settings → General → Node.js Version で変更する。Vite 8 は 22 でも動くため必須ではない。
+ビルド時の Node は `.nvmrc` から読み込まれるため、ローカル・CI と同じ v24 でビルドされる。
 
 ### SPA ルーティングを入れた場合
 
-react-router などを導入すると、`/result` のような URL への直接アクセスが 404 になる。
-その場合はプロジェクトルートに `vercel.json` を置く。
+Cloudflare Pages は、ビルド成果物に `404.html` がなければ、存在しないパスへのアクセスに `index.html` を返す。
+そのため react-router などを導入しても、`/result` のような URL への直接アクセスは追加設定なしで動く。
 
-```json
-{
-  "$schema": "https://openapi.vercel.sh/vercel.json",
-  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
-}
+`404.html` を置く場合は、`public/_redirects` に次の1行を書いて `index.html` に振り向ける。
+
+```
+/*  /index.html  200
 ```
 
 現状はルーターを使っていないため不要。
+
+## インフラ管理（OpenTofu）
+
+Cloudflare Pages のプロジェクト設定は [OpenTofu](https://opentofu.org/)（Terraform 互換のオープンソースの IaC ツール）でコード管理している。
+
+| ファイル | 内容 |
+|---|---|
+| `infra/versions.tf` | Cloudflare プロバイダのバージョン指定 |
+| `infra/main.tf` | Pages プロジェクトの定義（GitHub 連携・ビルド設定） |
+| `infra/variables.tf` | アカウント ID などの入力変数 |
+| `infra/encryption.tf` | state と plan の暗号化設定 |
+
+### 実行に必要なもの
+
+- OpenTofu（`brew install opentofu` などでインストール）
+- Cloudflare の API トークン（Pages を編集できる権限）
+- Cloudflare のアカウント ID
+- state を暗号化するパスフレーズ
+
+### 実行
+
+```bash
+cd infra
+tofu init     # 初回のみ。プロバイダをダウンロードする
+tofu plan     # 変更内容を確認する
+tofu apply    # 変更を反映する
+```
+
+### state の扱い
+
+- state（`infra/terraform.tfstate`）はローカルに置き、Git には含めない
+- state はパスフレーズで暗号化している（pbkdf2 + aes_gcm）
+- パスフレーズをなくすと state を読めなくなり、state をなくすと OpenTofu が既存のリソースを管理できなくなる。どちらも安全な場所に控えておく
 
 ## 学習リソース
 
