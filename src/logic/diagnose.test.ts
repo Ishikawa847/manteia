@@ -9,6 +9,7 @@ const philosopher = (id: PhilosopherId, coordinate: Partial<Coordinate>): Philos
     name: id,
     coordinate: { good: 0, knowledge: 0, society: 0, stance: 0, ...coordinate },
     description: '',
+    image: '',
 })
 
 const answersOf = (questions: readonly Question[], choiceIndexes: readonly number[]): Answer[] =>

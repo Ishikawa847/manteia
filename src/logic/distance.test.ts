@@ -9,6 +9,7 @@ const philosopher = (id: PhilosopherId, coordinate: Coordinate): Philosopher => 
     name: id,
     coordinate,
     description: '',
+    image: '',
 })
 
 describe('distance', () => {
